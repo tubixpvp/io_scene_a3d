@@ -1,7 +1,10 @@
-# io_scene_a3d
-Blender plugin to load A3D 3.2 and 3.3 models (3.1 not supported), 3.2 is most complete 3.3 is not so complete; this code will eventually be merged into the alternativa3d_tools github repo.
+# WIP io_scene_a3d
+Blender plugin to import the proprietary model format `A3D` used by the game [Tanki Online](https://tankionline.com/en/) from [Alternativa Games](https://alternativa.games/), it is not compatible with older the formats used by the flash based Alternativa3D engine (see [this plugin by Davide Jones](https://github.com/davidejones/alternativa3d_tools) instead).
 
-The code can read all the A3D3 data but not all of it is imported yet, some material data + transforms + some vertex data and the codebase could use a cleanup.
+## File format
+Check the wiki for file format documentation.
 
-- https://github.com/davidejones/alternativa3d_tools/issues/9
-- https://github.com/davidejones/alternativa3d_tools
+## Demo
+![Terrain model showcase](./images/demo1.png)<br>
+![UV and material surface showcase](./images/demo2.png)<br>
+![Complex multi object model showcase](./images/demo3.png)
