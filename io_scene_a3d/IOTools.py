@@ -34,3 +34,17 @@ def readNullTerminatedString(stream):
         string += char
         char = stream.read(1)
     return string.decode("utf8")
+
+def calculatePadding(length):
+    # (it basically works with rounding)
+    paddingSize = (((length + 3) // 4) * 4) - length
+    return paddingSize
+
+def readLengthPrefixedString(stream):
+    length, = unpackStream("<I", stream)
+    string = stream.read(length)
+
+    paddingSize = calculatePadding(length)
+    stream.read(paddingSize)
+
+    return string.decode("utf8")

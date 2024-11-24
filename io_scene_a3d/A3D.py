@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-from .IOTools import unpackStream, readNullTerminatedString
+from .IOTools import unpackStream, readNullTerminatedString, calculatePadding
 from . import A3DObjects
 
 '''
@@ -83,7 +83,20 @@ class A3D:
         self.readObjectBlock2(stream)
 
     def readRootBlock3(self, stream):
-        raise RuntimeError("Version 3 files are not supported yet")
+        # Verify signature
+        signature, length = unpackStream("<2I", stream)
+        if signature != A3D_ROOTBLOCK_SIGNATURE:
+            raise RuntimeError(f"Invalid root data block signature: {signature}")
+
+        # Read data
+        self.readMaterialBlock3(stream)
+        self.readMeshBlock3(stream)
+        self.readTransformBlock3(stream)
+        self.readObjectBlock3(stream)
+
+        # Padding
+        padding = calculatePadding(length)
+        stream.read(padding)
 
     '''
     Material data blocks
@@ -101,6 +114,23 @@ class A3D:
             material.read2(stream)
             self.materials.append(material)
     
+    def readMaterialBlock3(self, stream):
+        # Verify signature
+        signature, length, materialCount = unpackStream("<3I", stream)
+        if signature != A3D_MATERIALBLOCK_SIGNATURE:
+            raise RuntimeError(f"Invalid material data block signature: {signature}")
+
+        # Read data
+        print(f"Reading material block with {materialCount} materials and length {length}")
+        for _ in range(materialCount):
+            material = A3DObjects.A3DMaterial()
+            material.read3(stream)
+            self.materials.append(material)
+
+        # Padding
+        padding = calculatePadding(length)
+        stream.read(padding)
+
     '''
     Mesh data blocks
     '''
@@ -116,6 +146,23 @@ class A3D:
             mesh = A3DObjects.A3DMesh()
             mesh.read2(stream)
             self.meshes.append(mesh)
+
+    def readMeshBlock3(self, stream):
+        # Verify signature
+        signature, length, meshCount = unpackStream("<3I", stream)
+        if signature != A3D_MESHBLOCK_SIGNATURE:
+            raise RuntimeError(f"Invalid mesh data block signature: {signature}")
+
+        # Read data
+        print(f"Reading mesh block with {meshCount} meshes and length {length}")
+        for _ in range(meshCount):
+            mesh = A3DObjects.A3DMesh()
+            mesh.read3(stream)
+            self.meshes.append(mesh)
+        
+        # Padding
+        padding = calculatePadding(length)
+        stream.read(padding)
 
     '''
     Transform data blocks
@@ -139,6 +186,29 @@ class A3D:
             transformID, = unpackStream("<I", stream)
             self.transforms[transformID] = transforms[transformI]
 
+    def readTransformBlock3(self, stream):
+        # Verify signature
+        signature, length, transformCount = unpackStream("<3I", stream)
+        if signature != A3D_TRANSFORMBLOCK_SIGNATURE:
+            print(f"{stream.tell()}")
+            raise RuntimeError(f"Invalid transform data block signature: {signature}")
+
+        # Read data
+        print(f"Reading transform block with {transformCount} transforms and length {length}")
+        transforms = []
+        for _ in range(transformCount):
+            transform = A3DObjects.A3DTransform()
+            transform.read3(stream)
+            transforms.append(transform)
+        # Read and assign transform ids
+        for transformI in range(transformCount):
+            transformID, = unpackStream("<I", stream)
+            self.transforms[transformID] = transforms[transformI]
+
+        # Padding
+        padding = calculatePadding(length)
+        stream.read(padding)
+
     '''
     Object data blocks
     '''
@@ -155,3 +225,21 @@ class A3D:
             objec = A3DObjects.A3DObject()
             objec.read2(stream)
             self.objects.append(objec)
+
+    def readObjectBlock3(self, stream):
+        # Verify signature
+        signature, length, objectCount = unpackStream("<3I", stream)
+        if signature != A3D_OBJECTBLOCK_SIGNATURE:
+            print(f"{stream.tell()}")
+            raise RuntimeError(f"Invalid object data block signature: {signature}")
+
+        # Read data
+        print(f"Reading object block with {objectCount} objects and length {length}")
+        for _ in range(objectCount):
+            objec = A3DObjects.A3DObject()
+            objec.read3(stream)
+            self.objects.append(objec)
+
+        # Padding
+        padding = calculatePadding(length)
+        stream.read(padding)
