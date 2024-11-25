@@ -50,17 +50,21 @@ class A3DMesh:
         self.vertexBuffers = []
         self.submeshes = []
 
+        self.vertexCount = 0
+        self.vertexBufferCount = 0
+        self.submeshCount = 0
+
     def read2(self, stream):
         # Read vertex buffers
-        vertexCount, bufferCount = unpackStream("<2I", stream)
-        for _ in range(bufferCount):
+        self.vertexCount, self.vertexBufferCount = unpackStream("<2I", stream)
+        for _ in range(self.vertexBufferCount):
             vertexBuffer = A3DVertexBuffer()
-            vertexBuffer.read2(vertexCount, stream)
+            vertexBuffer.read2(self.vertexCount, stream)
             self.vertexBuffers.append(vertexBuffer)
         
         # Read submeshes
-        submeshCount, = unpackStream("<I", stream)
-        for _ in range(submeshCount):
+        self.submeshCount, = unpackStream("<I", stream)
+        for _ in range(self.submeshCount):
             submesh = A3DSubmesh()
             submesh.read2(stream)
             self.submeshes.append(submesh)
@@ -76,15 +80,15 @@ class A3DMesh:
         stream.read(4) # XXX: Unknown float value
 
         # Read vertex buffers
-        vertexCount, bufferCount = unpackStream("<2I", stream)
-        for _ in range(bufferCount):
+        self.vertexCount, self.vertexBufferCount = unpackStream("<2I", stream)
+        for _ in range(self.vertexBufferCount):
             vertexBuffer = A3DVertexBuffer()
-            vertexBuffer.read2(vertexCount, stream)
+            vertexBuffer.read2(self.vertexCount, stream)
             self.vertexBuffers.append(vertexBuffer)
         
         # Read submeshes
-        submeshCount, = unpackStream("<I", stream)
-        for _ in range(submeshCount):
+        self.submeshCount, = unpackStream("<I", stream)
+        for _ in range(self.submeshCount):
             submesh = A3DSubmesh()
             submesh.read3(stream)
             self.submeshes.append(submesh)
@@ -125,34 +129,29 @@ class A3DVertexBuffer:
 class A3DSubmesh:
     def __init__(self):
         self.indices = []
-        self.faces = []
         self.smoothingGroups = []
         self.materialID = None
 
+        self.indexCount = 0
+
     def read2(self, stream):
-        faceCount, = unpackStream("<I", stream)
-        for _ in range(faceCount):
-            face = unpackStream("<3H", stream)
-            self.faces.append(face)
-        for _ in range(faceCount):
-            smoothingGroup, = unpackStream("<I", stream)
-            self.smoothingGroups.append(smoothingGroup)
+        self.indexCount, = unpackStream("<I", stream)*3
+        self.indices = list(unpackStream(f"<{self.indexCount}H", stream))
+        self.smoothingGroups = list(unpackStream(f"<{self.indexCount//3}I", stream))
         self.materialID, = unpackStream("<H", stream)
 
-        print(f"[A3DSubmesh indices: {len(self.indices)} faces: {len(self.faces)} smoothing groups: {len(self.smoothingGroups)} materialID: {self.materialID}]")
+        print(f"[A3DSubmesh indices: {len(self.indices)} smoothing groups: {len(self.smoothingGroups)} materialID: {self.materialID}]")
 
     def read3(self, stream):
         # Read indices
-        indexCount, = unpackStream("<I", stream)
-        for _ in range(indexCount):
-            index, = unpackStream("<H", stream)
-            self.indices.append(index)
+        self.indexCount, = unpackStream("<I", stream)
+        self.indices = list(unpackStream(f"<{self.indexCount}H", stream))
         
         # Padding
-        padding = calculatePadding(indexCount*2) # Each index is 2 bytes
+        padding = calculatePadding(self.indexCount*2) # Each index is 2 bytes
         stream.read(padding)
 
-        print(f"[A3DSubmesh indices: {len(self.indices)} faces: {len(self.faces)} smoothing groups: {len(self.smoothingGroups)} materialID: {self.materialID}]")
+        print(f"[A3DSubmesh indices: {len(self.indices)} smoothing groups: {len(self.smoothingGroups)} materialID: {self.materialID}]")
 
 class A3DTransform:
     def __init__(self):
@@ -183,6 +182,8 @@ class A3DObject:
         self.transformID = None
         self.materialIDs = []
 
+        self.materialCount = 0
+
     def read2(self, stream):
         self.name = readNullTerminatedString(stream)
         self.meshID, self.transformID = unpackStream("<2I", stream)
@@ -190,10 +191,10 @@ class A3DObject:
         print(f"[A3DObject name: {self.name} meshID: {self.meshID} transformID: {self.transformID} materialIDs: {len(self.materialIDs)}]")
 
     def read3(self, stream):
-        self.meshID, self.transformID, materialCount = unpackStream("<3I", stream)
+        self.meshID, self.transformID, self.materialCount = unpackStream("<3I", stream)
 
         # Read material IDs
-        for _ in range(materialCount):
+        for _ in range(self.materialCount):
             materialID, = unpackStream("<I", stream)
             self.materialIDs.append(materialID)
 
