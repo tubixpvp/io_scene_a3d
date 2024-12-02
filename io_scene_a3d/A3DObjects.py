@@ -135,7 +135,8 @@ class A3DSubmesh:
         self.indexCount = 0
 
     def read2(self, stream):
-        self.indexCount, = unpackStream("<I", stream)*3
+        self.indexCount, = unpackStream("<I", stream) # This is just the face count so multiply it by 3
+        self.indexCount *= 3
         self.indices = list(unpackStream(f"<{self.indexCount}H", stream))
         self.smoothingGroups = list(unpackStream(f"<{self.indexCount//3}I", stream))
         self.materialID, = unpackStream("<H", stream)
@@ -195,7 +196,7 @@ class A3DObject:
 
         # Read material IDs
         for _ in range(self.materialCount):
-            materialID, = unpackStream("<I", stream)
+            materialID, = unpackStream("<i", stream)
             self.materialIDs.append(materialID)
 
         print(f"[A3DObject name: {self.name} meshID: {self.meshID} transformID: {self.transformID} materialIDs: {len(self.materialIDs)}]")

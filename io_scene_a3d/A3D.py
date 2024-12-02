@@ -203,7 +203,7 @@ class A3D:
         # Read and assign transform ids
         for transformI in range(transformCount):
             transformID, = unpackStream("<I", stream)
-            self.transforms[transformID] = transforms[transformI]
+            self.transforms[transformI] = transforms[transformI] #XXX: The IDs seem to be incorrect and instead map to index?
 
         # Padding
         padding = calculatePadding(length)
