@@ -33,7 +33,7 @@ def readNullTerminatedString(stream):
     while char != b"\x00":
         string += char
         char = stream.read(1)
-    return string.decode("utf8")
+    return string.decode("utf8", errors="ignore")
 
 def calculatePadding(length):
     # (it basically works with rounding)
@@ -47,4 +47,4 @@ def readLengthPrefixedString(stream):
     paddingSize = calculatePadding(length)
     stream.read(paddingSize)
 
-    return string.decode("utf8")
+    return string.decode("utf8", errors="ignore")

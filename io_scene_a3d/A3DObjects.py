@@ -36,6 +36,7 @@ class A3DMaterial:
         print(f"[A3DMaterial name: {self.name} color: {self.color} diffuse map: {self.diffuseMap}]")
 
     def read3(self, stream):
+        print(stream.tell())
         self.name = readLengthPrefixedString(stream)
         self.color = unpackStream("<3f", stream)
         self.diffuseMap = readLengthPrefixedString(stream)
