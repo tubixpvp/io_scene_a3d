@@ -5,6 +5,6 @@ Blender plugin to import the proprietary model format `A3D` used by the game [Ta
 Check the wiki for file format documentation.
 
 ## Demo
-![Terrain model showcase](./images/demo1.png)<br>
+![A3D models used in a blender scene ready for render](./images/demo1.png)<br>
 ![UV and material surface showcase](./images/demo2.png)<br>
-![Complex multi object model showcase](./images/demo3.png)
+![Terrain mesh example](./images/demo3.png)
