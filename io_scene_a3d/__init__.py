@@ -89,7 +89,8 @@ class ImportA3D(Operator, ImportHelper):
                     index = submesh.indices[indexI]
                     blenderVertexIndices.append(indexI)
                     blenderVertices += list(coordinates[index])
-                    blenderUV1s.append(uv1[index])
+                    x, y = uv1[index]
+                    blenderUV1s.append((x, 1-y)) #TODO: make this optional in the import menu?
                     #blenderUV2s += uv2[index]
             me.vertices.foreach_set("co", blenderVertices)
             me.polygons.foreach_set("loop_start", range(0, len(blenderVertices)//3, 3))
