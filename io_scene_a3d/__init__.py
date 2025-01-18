@@ -89,9 +89,16 @@ class ImportA3D(Operator, ImportHelper):
                     index = submesh.indices[indexI]
                     blenderVertexIndices.append(indexI)
                     blenderVertices += list(coordinates[index])
-                    x, y = uv1[index]
-                    blenderUV1s.append((x, 1-y)) #TODO: make this optional in the import menu?
-                    #blenderUV2s += uv2[index]
+                if len(uv1) != 0:
+                    for indexI in range(submesh.indexCount):
+                        index = submesh.indices[indexI]
+                        x, y = uv1[index]
+                        blenderUV1s.append((x, 1-y))
+                if len(uv2) != 0:
+                    for indexI in range(submesh.indexCount):
+                        index = submesh.indices[indexI]
+                        x, y = uv2[index]
+                        blenderUV2s.append((x, 1-y))
             me.vertices.foreach_set("co", blenderVertices)
             me.polygons.foreach_set("loop_start", range(0, len(blenderVertices)//3, 3))
             me.loops.foreach_set("vertex_index", blenderVertexIndices)
@@ -104,6 +111,13 @@ class ImportA3D(Operator, ImportHelper):
                     uvData[po.loop_start].uv = blenderUV1s[blenderVertexIndices[indexI]]
                     uvData[po.loop_start+1].uv = blenderUV1s[blenderVertexIndices[indexI+1]]
                     uvData[po.loop_start+2].uv = blenderUV1s[blenderVertexIndices[indexI+2]]
+            if len(uv2) != 0:
+                uvData = me.uv_layers.new(name="UV2").data
+                for polygonI, po in enumerate(me.polygons):
+                    indexI = polygonI * 3
+                    uvData[po.loop_start].uv = blenderUV2s[blenderVertexIndices[indexI]]
+                    uvData[po.loop_start+1].uv = blenderUV2s[blenderVertexIndices[indexI+1]]
+                    uvData[po.loop_start+2].uv = blenderUV2s[blenderVertexIndices[indexI+2]]
 
             # Apply materials (version 2)
             faceIndexBase = 0
@@ -147,7 +161,6 @@ class ImportA3D(Operator, ImportHelper):
 
             # Apply materials (version 3)
             for materialID in objec.materialIDs:
-                print(materialID)
                 if materialID == -1:
                     continue
                 me.materials.append(materials[materialID])
