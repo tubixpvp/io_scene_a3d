@@ -171,7 +171,6 @@ class A3D:
         # Verify signature
         signature, _, transformCount = unpackStream("<3I", stream)
         if signature != A3D_TRANSFORMBLOCK_SIGNATURE:
-            print(f"{stream.tell()}")
             raise RuntimeError(f"Invalid transform data block signature: {signature}")
 
         # Read data
@@ -190,7 +189,6 @@ class A3D:
         # Verify signature
         signature, length, transformCount = unpackStream("<3I", stream)
         if signature != A3D_TRANSFORMBLOCK_SIGNATURE:
-            print(f"{stream.tell()}")
             raise RuntimeError(f"Invalid transform data block signature: {signature}")
 
         # Read data
@@ -216,7 +214,6 @@ class A3D:
         # Verify signature
         signature, _, objectCount = unpackStream("<3I", stream)
         if signature != A3D_OBJECTBLOCK_SIGNATURE:
-            print(f"{stream.tell()}")
             raise RuntimeError(f"Invalid object data block signature: {signature}")
 
         # Read data
@@ -230,7 +227,6 @@ class A3D:
         # Verify signature
         signature, length, objectCount = unpackStream("<3I", stream)
         if signature != A3D_OBJECTBLOCK_SIGNATURE:
-            print(f"{stream.tell()}")
             raise RuntimeError(f"Invalid object data block signature: {signature}")
 
         # Read data
