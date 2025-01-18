@@ -4,6 +4,7 @@ from bpy.types import Operator
 from bpy.props import StringProperty, BoolProperty
 from bpy_extras.io_utils import ImportHelper
 from bpy_extras.node_shader_utils import PrincipledBSDFWrapper
+from bpy_extras.image_utils import load_image
 
 from .A3D import A3D
 from .A3DObjects import (
@@ -22,8 +23,16 @@ class ImportA3D(Operator, ImportHelper):
     bl_idname = "import_scene.alternativa"
     bl_label = "Import A3D"
     bl_description = "Import an A3D model"
+    bl_options = {'PRESET', 'UNDO'}
 
     filter_glob: StringProperty(default="*.a3d", options={'HIDDEN'})
+
+    # User options
+    #try_import_textures: BoolProperty(name="Search for textures", description="Automatically search for lightmap, track and wheel textures and attempt to apply them", default=True)
+    create_collection: BoolProperty(name="Create collection", description="Create a collection to hold all the model objects", default=True)
+
+    def draw(self, context):
+        import_panel_options(self.layout, self)
 
     def invoke(self, context, event):
         return ImportHelper.invoke(self, context, event)
@@ -134,6 +143,10 @@ class ImportA3D(Operator, ImportHelper):
             me.update()
             meshes.append(me)
         # Create objects
+        collection = bpy.context.collection # By default use the active collection
+        if self.create_collection:
+            collection = bpy.data.collections.new("Object")
+            bpy.context.collection.children.link(collection)
         for objec in modelData.objects:
             me = meshes[objec.meshID]
             mesh = modelData.meshes[objec.meshID]
@@ -150,7 +163,7 @@ class ImportA3D(Operator, ImportHelper):
 
             # Create the object
             ob = bpy.data.objects.new(name, me)
-            bpy.context.collection.objects.link(ob)
+            collection.objects.link(ob)
 
             # Set transform
             ob.location = transform.position
@@ -173,6 +186,13 @@ class ImportA3D(Operator, ImportHelper):
 '''
 Menu
 '''
+def import_panel_options(layout, operator):
+    header, body = layout.panel("alternativa_import_options", default_closed=False)
+    header.label(text="Options")
+    if body:
+        #body.prop(operator, "try_import_textures")
+        body.prop(operator, "create_collection")
+
 def menu_func_import_a3d(self, context):
     self.layout.operator(ImportA3D.bl_idname, text="Alternativa3D HTML5 (.a3d)")
 
