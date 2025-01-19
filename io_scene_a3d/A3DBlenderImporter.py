@@ -33,13 +33,14 @@ from .A3DObjects import (
 )
 
 class A3DBlenderImporter:
-    def __init__(self, modelData, create_collection=True):
+    def __init__(self, modelData, create_collection=True, reset_empty_transform=True):
         self.modelData = modelData
         self.materials = []
         self.meshes = []
 
         # User settings
         self.create_collection = create_collection
+        self.reset_empty_transform = reset_empty_transform
 
     def importData(self):
         print("Importing A3D model data into blender")
@@ -191,5 +192,9 @@ class A3DBlenderImporter:
         ob.rotation_mode = "QUATERNION"
         x, y, z, w = transform.rotation
         ob.rotation_quaternion = (w, x, y, z)
+
+        if self.reset_empty_transform:
+            if transform.scale == (0.0, 0.0, 0.0): ob.scale = (1.0, 1.0, 1.0)
+            if transform.rotation == (0.0, 0.0, 0.0, 0.0): ob.rotation_quaternion = (1.0, 0.0, 0.0, 0.0)
 
         return ob
