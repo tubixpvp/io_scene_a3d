@@ -22,6 +22,7 @@ SOFTWARE.
 
 import bpy
 from bpy_extras.node_shader_utils import PrincipledBSDFWrapper
+from bpy_extras.image_utils import load_image
 
 from .A3DObjects import (
     A3D_VERTEXTYPE_COORDINATE,
@@ -32,15 +33,32 @@ from .A3DObjects import (
     A3D_VERTEXTYPE_NORMAL2
 )
 
+def addImageTextureToMaterial(image, node_tree):
+    nodes = node_tree.nodes
+    links = node_tree.links
+    
+    # Check if this material already has a texture on it
+    if len(nodes) > 2:
+        return
+
+    # Create nodes
+    principledBSDFNode = nodes[0]
+    textureNode = nodes.new(type="ShaderNodeTexImage")
+    links.new(textureNode.outputs["Color"], principledBSDFNode.inputs["Base Color"])
+    # Apply image
+    if image != None: textureNode.image = image
+
 class A3DBlenderImporter:
-    def __init__(self, modelData, create_collection=True, reset_empty_transform=True):
+    def __init__(self, modelData, directory, create_collection=True, reset_empty_transform=True, try_import_textures=True):
         self.modelData = modelData
+        self.directory = directory
         self.materials = []
         self.meshes = []
 
         # User settings
         self.create_collection = create_collection
         self.reset_empty_transform = reset_empty_transform
+        self.try_import_textures = try_import_textures
 
     def importData(self):
         print("Importing A3D model data into blender")
@@ -192,9 +210,37 @@ class A3DBlenderImporter:
         ob.rotation_mode = "QUATERNION"
         x, y, z, w = transform.rotation
         ob.rotation_quaternion = (w, x, y, z)
-
         if self.reset_empty_transform:
             if transform.scale == (0.0, 0.0, 0.0): ob.scale = (1.0, 1.0, 1.0)
             if transform.rotation == (0.0, 0.0, 0.0, 0.0): ob.rotation_quaternion = (1.0, 0.0, 0.0, 0.0)
+
+        # Attempt to load textures
+        if self.try_import_textures and len(me.materials) != 0:
+            ma = me.materials[0] # Assume this is the main material
+            name = name.lower()
+            if name == "hull" or name == "turret":
+                # lightmap.webp
+                print("Load lightmap")
+                
+                # Load image
+                image = load_image("lightmap.webp", self.directory, check_existing=True)
+                # Apply image
+                addImageTextureToMaterial(image, ma.node_tree)
+            elif "track" in name:
+                # tracks.webp
+                print("Load tracks")
+
+                # Load image
+                image = load_image("tracks.webp", self.directory, check_existing=True)
+                # Apply image
+                addImageTextureToMaterial(image, ma.node_tree)
+            elif "wheel" in name:
+                # wheels.webp
+                print("Load wheels")
+
+                # Load image
+                image = load_image("wheels.webp", self.directory, check_existing=True)
+                # Apply image
+                addImageTextureToMaterial(image, ma.node_tree)
 
         return ob

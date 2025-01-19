@@ -38,10 +38,11 @@ class ImportA3D(Operator, ImportHelper):
     bl_options = {'PRESET', 'UNDO'}
 
     filter_glob: StringProperty(default="*.a3d", options={'HIDDEN'})
+    directory: StringProperty(subtype='DIR_PATH', options={'HIDDEN'})
 
     # User options
-    #try_import_textures: BoolProperty(name="Search for textures", description="Automatically search for lightmap, track and wheel textures and attempt to apply them", default=True)
     create_collection: BoolProperty(name="Create collection", description="Create a collection to hold all the model objects", default=True)
+    try_import_textures: BoolProperty(name="Search for textures", description="Automatically search for lightmap, track and wheel textures and attempt to apply them", default=True)
     reset_empty_transform: BoolProperty(name="Reset empty transforms", description="Reset rotation and scale if it is set to 0, more useful for version 2 models like props", default=True)
 
     def draw(self, context):
@@ -60,7 +61,7 @@ class ImportA3D(Operator, ImportHelper):
             modelData.read(file)
         
         # Import data into blender
-        modelImporter = A3DBlenderImporter(modelData, self.create_collection, self.reset_empty_transform)
+        modelImporter = A3DBlenderImporter(modelData, self.directory, self.create_collection, self.reset_empty_transform, self.try_import_textures)
         modelImporter.importData()
 
         return {"FINISHED"}
@@ -72,8 +73,8 @@ def import_panel_options(layout, operator):
     header, body = layout.panel("alternativa_import_options", default_closed=False)
     header.label(text="Options")
     if body:
-        #body.prop(operator, "try_import_textures")
         body.prop(operator, "create_collection")
+        body.prop(operator, "try_import_textures")
         body.prop(operator, "reset_empty_transform")
 
 def menu_func_import_a3d(self, context):
