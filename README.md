@@ -19,3 +19,46 @@ Select the zip folder you downloaded and you should be good to go.
 ![A3D models used in a blender scene ready for render](./images/demo1.png)<br>
 ![UV and material surface showcase](./images/demo2.png)<br>
 ![Terrain mesh example](./images/demo3.png)
+
+## Status
+### Work in progress, the project is mostly complete for readonly file access.
+### A3D1
+No support, I have never seen one of these files and 99.999% of people will only be using A3D2 and A3D3 files so there isn't much point supporting them.
+### A3D2
+Full readonly support, not all data is imported into blender.
+#### Import
+- [x] Materials
+- diffuse map data is not used by the plugin because it references files that are only accessible if you work at Alternativa Games (such as texture `.psd` source files)
+- [x] Meshes
+- - [x] Submesh data
+- - [x] Coordinates
+- - [ ] Normals (data not imported into blender)
+- - [x] UVs
+- - [ ] Vertex colour (data not imported into blender, not very useful anyway)
+- - [ ] Smoothing groups
+- [x] Transform
+- [x] Object data
+#### Export
+- [ ] Materials
+- [ ] Meshes
+- [ ] Transfoms
+- [ ] Objects
+### A3D3
+Full readonly support, not all data is imported into blender.
+#### Import
+- [x] Materials
+- diffuse map data is not used by the plugin because it references files that are only accessible if you work at Alternativa Games (such as texture `.psd` source files)
+- [x] Meshes
+- - [x] Submesh data
+- - [x] Coordinates
+- - [ ] Normals (data not imported into blender)
+- - [x] UVs
+- - [ ] Vertex colour (data not imported into blender, not very useful anyway)
+- - [ ] Boundbox (data not imported into blender, blender calculates its own boundbox data)
+- [x] Transforms
+- [x] Objects
+#### Export
+- [ ] Materials
+- [ ] Meshes
+- [ ] Transfoms
+- [ ] Objects
