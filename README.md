@@ -7,11 +7,11 @@ Check the wiki for file format documentation.
 ## Installation
 ### Requirments: Blender version 4.2+
 
-Firstly download the repository by clicking the "Code" button and then "Download ZIP".
-![step1](./images/step1.png)
+Firstly download the repository by clicking the "Code" button and then "Download ZIP".<br>
+![step1](./images/step1.png)<br>
 
-In blender, go to Edit > Preferences and click the "add-ons" button. From there click the arrow on the top right and click "Install from disk".
-![step2](./images/step2.png)
+In blender, go to Edit > Preferences and click the "add-ons" button. From there click the arrow on the top right and click "Install from disk".<br>
+![step2](./images/step2.png)<br>
 
 Select the zip folder you downloaded and you should be good to go.
 
