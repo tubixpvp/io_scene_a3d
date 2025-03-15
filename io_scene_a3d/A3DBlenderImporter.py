@@ -178,8 +178,8 @@ class A3DBlenderImporter:
         return me
 
     def buildBlenderObject(self, objectData):
-        print("building object name=", objectData.name, ", meshId =", objectData.meshID, ", transformId =", objectData.transformID)
-        print("available transforms:", self.modelData.transforms)
+        print("Building object name=", objectData.name, ", meshId=", objectData.meshID, ", transformId=", objectData.transformID)
+        print("Available transforms count:", len(self.modelData.transforms))
 
         me = self.meshes[objectData.meshID]
         mesh = self.modelData.meshes[objectData.meshID]
