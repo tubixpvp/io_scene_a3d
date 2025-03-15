@@ -40,8 +40,9 @@ class A3D:
     def __init__(self):
         self.materials = []
         self.meshes = []
-        self.transforms = {}
+        self.transforms = []
         self.objects = []
+        self.parentIds = []
 
     '''
     Main IO
@@ -175,15 +176,17 @@ class A3D:
 
         # Read data
         print(f"Reading transform block with {transformCount} transforms")
-        transforms = []
+        #self.transforms = []
         for _ in range(transformCount):
             transform = A3DObjects.A3DTransform()
             transform.read2(stream)
-            transforms.append(transform)
-        # Read and assign transform ids
-        for transformI in range(transformCount):
-            transformID, = unpackStream("<I", stream)
-            self.transforms[transformID] = transforms[transformI]
+            self.transforms.append(transform)
+        # Read parents IDs
+        for _ in range(transformCount):
+            parentId, = unpackStream("<I", stream)
+            #self.transforms[transformID] = transforms[transformI]
+            self.parentIds.append(parentId)
+
 
     def readTransformBlock3(self, stream):
         # Verify signature
@@ -200,6 +203,7 @@ class A3D:
             transforms.append(transform)
         # Read and assign transform ids
         for transformI in range(transformCount):
+            #TODO fix as in V2
             transformID, = unpackStream("<I", stream)
             self.transforms[transformI] = transforms[transformI] #XXX: The IDs seem to be incorrect and instead map to index?
 

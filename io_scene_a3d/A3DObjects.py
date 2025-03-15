@@ -57,6 +57,7 @@ class A3DMesh:
     def read2(self, stream):
         # Read vertex buffers
         self.vertexCount, self.vertexBufferCount = unpackStream("<2I", stream)
+        print("unpacking vertex buffers, count=", self.vertexBufferCount)
         for _ in range(self.vertexBufferCount):
             vertexBuffer = A3DVertexBuffer()
             vertexBuffer.read2(self.vertexCount, stream)
@@ -140,6 +141,9 @@ class A3DSubmesh:
         self.indices = list(unpackStream(f"<{self.indexCount}H", stream))
         self.smoothingGroups = list(unpackStream(f"<{self.indexCount//3}I", stream))
         self.materialID, = unpackStream("<H", stream)
+
+        if self.materialID == -1 or self.materialID == 65535:
+            self.materialID = None
 
         print(f"[A3DSubmesh indices: {len(self.indices)} smoothing groups: {len(self.smoothingGroups)} materialID: {self.materialID}]")
 

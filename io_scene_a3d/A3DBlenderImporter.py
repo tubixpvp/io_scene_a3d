@@ -178,9 +178,14 @@ class A3DBlenderImporter:
         return me
 
     def buildBlenderObject(self, objectData):
+        print("building object name=", objectData.name, ", meshId =", objectData.meshID, ", transformId =", objectData.transformID)
+        print("available transforms:", self.modelData.transforms)
+
         me = self.meshes[objectData.meshID]
         mesh = self.modelData.meshes[objectData.meshID]
         transform = self.modelData.transforms[objectData.transformID]
+
+        parentId = self.modelData.parentIds[objectData.meshID] #TODO
 
         # Apply materials to mesh (version 3)
         for materialID in objectData.materialIDs:
